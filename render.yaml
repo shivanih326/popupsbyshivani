@@ -13,7 +13,3 @@ services:
         sync: false
       - key: DB_DIALECT
         value: org.hibernate.dialect.TiDBDialect
-      - key: ADMIN_USERNAME
-        value: admin
-      - key: ADMIN_PASSWORD
-        sync: false

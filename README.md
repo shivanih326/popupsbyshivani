@@ -17,12 +17,12 @@ A starter full-stack project based on the supplied abstract. It uses Java 17, Sp
 
 ## Local setup
 1. Install and start MySQL.
-2. Set `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, and a strong `ADMIN_PASSWORD` (at least 12 characters). `ADMIN_USERNAME` defaults to `admin`. Do not put passwords in this repository.
+2. Set `DB_URL`, `DB_USERNAME`, and `DB_PASSWORD` for your local MySQL database. Do not put database credentials in this repository.
 3. Open a terminal in the project folder and run:
    ```bash
    mvn spring-boot:run
    ```
-4. Open `http://localhost:8080` in your browser and enter the admin credentials when prompted.
+4. Open `http://localhost:8080` in your browser.
 
 The database named `popupsbyshivani` is created automatically if the MySQL user has permission. JPA creates/updates tables on startup.
 
@@ -32,19 +32,18 @@ The same Spring Boot service serves the frontend and API at one URL. TiDB is MyS
 
 1. Create a free **TiDB Cloud Starter** instance and a database named `popupsbyshivani`. In the TiDB console, use **Connect** to get the host, port, username, password, and TLS settings. A Starter connection must use TLS. Use a JDBC URL in the form `jdbc:mysql://HOST:4000/popupsbyshivani?sslMode=VERIFY_IDENTITY`, replacing `HOST` and the port with the values TiDB gives you. Use its complete username, including the instance prefix.
 2. Push this repository to GitHub. If this folder has no commit yet, create one before pushing. Never commit `.env` or credentials.
-3. In Render, choose **New > Blueprint**, connect the GitHub repository, and use `render.yaml`. Select the Free web service. Fill in the prompted secret values:
+3. In Render, choose **New > Blueprint**, connect the GitHub repository, and use `render.yaml`. Select the Free web service. Fill in the prompted database values:
 
    | Variable | Value |
    | --- | --- |
    | `DB_URL` | TiDB JDBC URL with TLS |
    | `DB_USERNAME` | Complete TiDB username |
    | `DB_PASSWORD` | TiDB password |
-   | `ADMIN_PASSWORD` | A unique password of at least 12 characters |
 
-   The Blueprint supplies `DB_DIALECT=org.hibernate.dialect.TiDBDialect` and `ADMIN_USERNAME=admin`. The app reads Render's `PORT` automatically. If you create a Web Service manually instead, choose **Docker**, **Free**, and set all six variables yourself; use `/actuator/health` as the health check path.
-4. After deployment, open the Render URL and sign in with the admin credentials. Verify `/actuator/health` returns `{"status":"UP"}`, then create a sample workshop and refresh the page to verify it persists.
+   The Blueprint supplies `DB_DIALECT=org.hibernate.dialect.TiDBDialect`. The app reads Render's `PORT` automatically. If you create a Web Service manually instead, choose **Docker**, **Free**, and set `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, and `DB_DIALECT`; use `/actuator/health` as the health check path.
+4. After deployment, open the Render URL. Verify `/actuator/health` returns `{"status":"UP"}`, then create a sample workshop and refresh the page to verify it persists.
 
-Render's free web service sleeps after 15 minutes without requests, so the first visit can take about a minute. TiDB Starter has a free usage quota; monitor it in the TiDB dashboard. Database connections require TLS. The app intentionally fails startup if `ADMIN_PASSWORD` is missing or shorter than 12 characters.
+Render's free web service sleeps after 15 minutes without requests, so the first visit can take about a minute. TiDB Starter has a free usage quota; monitor it in the TiDB dashboard. Database connections require TLS.
 
 ## API endpoints
 | Method | Endpoint | Purpose |
@@ -87,6 +86,6 @@ Create payment record:
 
 ## Important limitations
 - This is a learning/demo starter, not a production-ready system.
-- The management UI and API use one admin account with HTTP Basic authentication. Render provides HTTPS at its public URL. This is suitable for a small demo, but it has no account recovery, audit log, granular roles, or rate limiting. Use test participant data until privacy and operational controls are added.
+- The management UI and API have no login. Anyone with the public URL can view participant records and create, edit, or delete data. Use only disposable sample data; do not store real participant or payment information in a public deployment.
 - Payment records are manual; there is no online payment gateway or automated notification service.
 - Avoid deleting participants/workshops that are referenced by bookings. The database may reject deletion to preserve relationships.
